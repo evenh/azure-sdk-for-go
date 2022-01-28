@@ -9,6 +9,7 @@
 package azblob
 
 import (
+	"encoding/base64"
 	"encoding/xml"
 	"time"
 )
@@ -512,6 +513,14 @@ func (b *BlobPropertiesInternal) UnmarshalXML(d *xml.Decoder, start xml.StartEle
 	b.DeletedTime = (*time.Time)(aux.DeletedTime)
 	b.ExpiresOn = (*time.Time)(aux.ExpiresOn)
 	b.LastModified = (*time.Time)(aux.LastModified)
+	if aux.ContentMD5 != nil {
+		b.ContentMD5 = *aux.ContentMD5
+		contentMD5, err := base64.StdEncoding.DecodeString(string(*aux.ContentMD5))
+		if err != nil {
+			return err
+		}
+		b.ContentMD5 = contentMD5
+	}
 	return nil
 }
 
